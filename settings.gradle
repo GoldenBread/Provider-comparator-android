@@ -1,0 +1,1 @@
+include ':app', ':navisensprovider', ':navisenslocationprovider', ':basicsteplocationprovider'
