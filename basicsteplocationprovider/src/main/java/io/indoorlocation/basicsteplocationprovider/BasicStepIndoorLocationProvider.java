@@ -25,7 +25,7 @@ public class BasicStepIndoorLocationProvider extends IndoorLocationProvider impl
 
 
     private final double LOW_PASS_TIME_CONSTANT = 0.15;
-    private final double STEP_ACCELERATION_DEVIATION_THRESHOLD = 0.1;
+    private final double STEP_ACCELERATION_DEVIATION_THRESHOLD = 0.008;
     private final double STEP_LENGTH = 1.0;
 
     double lowPassXAcceleration;
@@ -45,12 +45,14 @@ public class BasicStepIndoorLocationProvider extends IndoorLocationProvider impl
     private boolean mLastAccelerometerSet = false;
     private boolean mLastMagnetometerSet = false;
 
+    private long mTimer = 0;
+
     /*NSMutableArray<NSNumber*>* accelerationBuffer;
     ILIndoorLocation* lastIndoorLocation;
     double heading;
     NSTimer* timer;*/
-            
-    
+
+
     public BasicStepIndoorLocationProvider(Object systemService) {
         super();
         mSensorManager = (SensorManager) systemService;
@@ -91,9 +93,13 @@ public class BasicStepIndoorLocationProvider extends IndoorLocationProvider impl
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        Log.d("basicStep","EVEeNT " + event.sensor.getType() + " deg" + currentDegree);
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
+        //Log.d("basicStep","EVEeNT " + event.sensor.getType() + " deg" + currentDegree);
+
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER && mTimer - System.currentTimeMillis() > 100) {
+            Log.d("triggered", "processingSingleAccelerationMeasurement");
+            mTimer = System.currentTimeMillis();
             processingSingleAccelerationMeasurement(event);
+        }
         /*else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
             float degree = Math.round(event.values[0]);
             Log.d("Heading: " ,Float.toString(degree) + " degrees");
@@ -108,7 +114,7 @@ public class BasicStepIndoorLocationProvider extends IndoorLocationProvider impl
             currentDegree = -degree;
         }*/
 
-//https://www.wlsdevelop.com/index.php/en/blog?option=com_content&view=article&id=38
+
         if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
             SensorManager.getRotationMatrixFromVector(rMat, event.values);
             currentDegree = (int) (Math.toDegrees(SensorManager.getOrientation(rMat, orientation)[0]) + 360) % 360;
@@ -169,6 +175,7 @@ public class BasicStepIndoorLocationProvider extends IndoorLocationProvider impl
     private void makeAStep() {
         if (lastIndoorLocation != null) {
             lastIndoorLocation = locationWithBearing(currentDegree, STEP_LENGTH, lastIndoorLocation);
+            Log.d("Position", lastIndoorLocation.getLatitude() + " " + lastIndoorLocation.getLongitude());
             dispatchIndoorLocationChange(lastIndoorLocation);
         }
     }

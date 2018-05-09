@@ -36,7 +36,7 @@ public class Comparator extends IndoorLocationProvider implements IndoorLocation
         this.trajectories = new ArrayList<>();
 
         colorList = Arrays.asList(
-                "#F44336", "#9C27B0", "#3F51B5",
+                "#F44336", "#3F51B5", "#9C27B0",
                 "#2196F3", "#00BCD4", "#009688",
                 "#8BC34A", "#CDDC39", "#FFC107");
 

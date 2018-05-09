@@ -63,10 +63,7 @@ public class NavisensIndoorLocationProvider extends IndoorLocationProvider imple
         motionDna.runMotionDna(key);
 
         motionDna.setCallbackUpdateRateInMs(1000);
-        motionDna.setExternalPositioningState(MotionDna.ExternalPositioningState.HIGH_ACCURACY);
         motionDna.setPowerMode(MotionDna.PowerConsumptionMode.PERFORMANCE);
-
-        motionDna.startUDP();
     }
 
     @Override

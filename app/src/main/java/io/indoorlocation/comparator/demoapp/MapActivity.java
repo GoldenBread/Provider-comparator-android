@@ -38,6 +38,8 @@ public class MapActivity extends AppCompatActivity {
     private IndoorLocationProvider manualIndoorLocationProvider;
     private GPSIndoorLocationProvider gpsIndoorLocationProvider;
     private BasicStepIndoorLocationProvider basicStepIndoorLocationProvider;
+    private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,7 @@ public class MapActivity extends AppCompatActivity {
             public void onMapReady(MapboxMap mapboxMap) {
 
                 mapwizePlugin = new MapwizePlugin(mapView, mapboxMap, new MapOptions());
+
 
                 comparatorIndoorLocation = new Comparator(mapboxMap);
                 manualIndoorLocationProvider = new ManualIndoorLocationProvider();
@@ -76,10 +79,10 @@ public class MapActivity extends AppCompatActivity {
                         //IndoorLocation indoorLocation = new IndoorLocation(navisensIndoorLocationProvider.getName(), latLngFloor.getLatitude(), latLngFloor.getLongitude(), latLngFloor.getFloor(), System.currentTimeMillis());
                         IndoorLocation indoorLocation = new IndoorLocation(manualIndoorLocationProvider.getName(), latLngFloor.getLatitude(), latLngFloor.getLongitude(), latLngFloor.getFloor(), System.currentTimeMillis());
                         manualIndoorLocationProvider.dispatchIndoorLocationChange(indoorLocation);
+                        IndoorLocation indoorLocation3 = new IndoorLocation(basicStepIndoorLocationProvider.getName(), latLngFloor.getLatitude(), latLngFloor.getLongitude(), latLngFloor.getFloor(), System.currentTimeMillis());
+                        basicStepIndoorLocationProvider.setIndoorLocation(indoorLocation3);
                         IndoorLocation indoorLocation2 = new IndoorLocation(navisensIndoorLocationProvider.getName(), latLngFloor.getLatitude(), latLngFloor.getLongitude(), latLngFloor.getFloor(), System.currentTimeMillis());
                         navisensIndoorLocationProvider.dispatchIndoorLocationChange(indoorLocation2);
-                        IndoorLocation indoorLocation3 = new IndoorLocation(basicStepIndoorLocationProvider.getName(), latLngFloor.getLatitude(), latLngFloor.getLongitude(), latLngFloor.getFloor(), System.currentTimeMillis());
-                        basicStepIndoorLocationProvider.dispatchIndoorLocationChange(indoorLocation3);
 
                     }
                 });
@@ -88,15 +91,19 @@ public class MapActivity extends AppCompatActivity {
     }
 
     private void setupLocationProvider() {
+        comparatorIndoorLocation.addIndoorLocationProvider(basicStepIndoorLocationProvider);
         comparatorIndoorLocation.addIndoorLocationProvider(navisensIndoorLocationProvider);
         comparatorIndoorLocation.addIndoorLocationProvider(manualIndoorLocationProvider);
         comparatorIndoorLocation.addIndoorLocationProvider(gpsIndoorLocationProvider);
-        comparatorIndoorLocation.addIndoorLocationProvider(basicStepIndoorLocationProvider);
 
-        gpsIndoorLocationProvider.start();
+        /*gpsIndoorLocationProvider.start();
         basicStepIndoorLocationProvider.start();
-        navisensIndoorLocationProvider.start();
+        navisensIndoorLocationProvider.start();*/
         comparatorIndoorLocation.start();
+        mapwizePlugin.setLocationProvider(basicStepIndoorLocationProvider);
+
+
+
         //mapwizePlugin.setLocationProvider(navisensIndoorLocationProvider);
         //mapwizePlugin.setLocationProvider(manualIndoorLocationProvider);
 
@@ -167,3 +174,4 @@ public class MapActivity extends AppCompatActivity {
         mapView.onSaveInstanceState(outState);
     }
 }
+
